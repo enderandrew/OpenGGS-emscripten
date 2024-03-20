@@ -1,5 +1,5 @@
 #include "globals.h"
-
+#include "ContentManager.hpp"
 StageDef_C64 StageC64;
 StageCacheDef_C64 StageCache_C64;
 BackGroundElements_Def BackGroundElements;
@@ -17,7 +17,8 @@ void STAGE_Save(int StageNumber)
   int x, y;
   FILE *Stage_File;
   ImportStage_Struct ExportStage; // all the data of one stage (currently approx 35KB per stage!)
-  Stage_File = fopen (FileName.Stage[0], "rb+");
+
+  Stage_File = fopen (ContentManager::getSelectedStageFile().c_str(), "rb+");
   // open file in binary mode
 
   // COPY StageCache_C64 TO Export.Stage
@@ -98,7 +99,7 @@ void STAGES_Import()
   int StageNumber = 0;
 
   FILE *Stages_File;
-  Stages_File = fopen (FileName.Stage[0], "rb");
+  Stages_File = fopen (ContentManager::getSelectedStageFile().c_str(), "rb");
 
   if (Stages_File != NULL)
   {
@@ -357,9 +358,9 @@ void STAGE_Load(int StageNumber, int CheckPointNumber, bool ShowSplashScreen, bo
 
   if(ShowSplashScreen && GV.SplashscreensEnabled){LOOP_Gameloop_Splashscreen();}
 
-  if(GV.Mode == MODE_GAMELOOP && StageC64.BackgroundColour == 0){AUDIO_Music_Play(MUSIC_OUTDOORS);}
-  if(GV.Mode == MODE_GAMELOOP && StageC64.BackgroundColour == 1){AUDIO_Music_Play(MUSIC_INDOORS);}
-  if(GV.Mode == MODE_MENU){AUDIO_Music_Play(MUSIC_MENU);}
+  if(GV.Mode == MODE_GAMELOOP && StageC64.BackgroundColour == 0){Audio::playMusic(Audio::MusicTypeEnum::MUSIC_OUTDOORS);}
+  if(GV.Mode == MODE_GAMELOOP && StageC64.BackgroundColour == 1){Audio::playMusic(Audio::MusicTypeEnum::MUSIC_INDOORS);}
+  if(GV.Mode == MODE_MENU){Audio::playMusic(Audio::MusicTypeEnum::MUSIC_MENU);}
 }
 
 // ##############################################
@@ -400,36 +401,7 @@ void STAGE_Copy_To_StageC64()
   }
 }
 
-// ##############################################
-// ##############################################
-// ##############################################
 
-void STAGES_Files_Names_Load()
-{
-  DIR *dir;
-  struct dirent *ent;
-  int x;
-  for(x=0; x<20; x++)
-  {
-    snprintf(FileName.Stage[x], sizeof(char) * 128, "---");
-  }
-
-  x = 1;
-  if ((dir = opendir ("base/stages/")) != NULL) {
-    /* print all the files and directories within directory */
-    while ((ent = readdir (dir)) != NULL)
-    {
-      if(strncmp("..", ent->d_name, 2) != 0 && strncmp(".", ent->d_name, 2) != 0)
-      {
-        snprintf(FileName.Stage[x], sizeof(char) * 128, "base/stages/%s",ent->d_name);
-        snprintf(FileName.StageShort[x], sizeof(char) * 128, ent->d_name);
-        x++;
-        if(x>19){x=19;}
-      }
-    }
-    closedir (dir);
-  }
-}
 
 // ##############################################
 // ##############################################

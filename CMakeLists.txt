@@ -1,77 +1,58 @@
-cmake_minimum_required(VERSION 3.7)
-project(OpenGGS)
+cmake_minimum_required(VERSION 3.15)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${OpenGGS_SOURCE_DIR}/cmake")
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+endif()
 
-find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
-find_package(SDL2_mixer REQUIRED)
 
-include_directories(${SDL2_INCLUDE_DIR}
+project(openggs VERSION 0.1)
+
+message("${CMAKE_PROJECT_NAME} version ${CMAKE_PROJECT_VERSION}")
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+    set(USE_FLAGS "-fno-rtti -O3 -sUSE_LIBPNG=1 -sUSE_SDL=2 -sUSE_SDL_IMAGE=2  -sSDL2_IMAGE_FORMATS='png' -sUSE_SDL_MIXER=2 -sSDL2_MIXER_FORMATS='wav' ")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${USE_FLAGS}")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${USE_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${USE_FLAGS}" -flto -Wl,-u,fileno -Wl,-u,_emscripten_run_callback_on_thread -sWASM=2 )
+    set(CMAKE_EXECUTABLE_SUFFIX .html)
+	include_directories(
+		${EMSCRIPTEN_ROOT_PATH}/system
+		${CMAKE_SOURCE_DIR}/include
+		${SDL2_INCLUDE_DIRS}
+		${SDL2_IMAGE_INCLUDE_DIRS}
+		${SDL2_MIXER_INCLUDE_DIRS}
+		/mnt/d/Development/emsdk/upstream/emscripten/cache/sysroot/include/spdlog/
+	)
+else()
+	find_package(SDL2 REQUIRED)
+	find_package(SDL2_image REQUIRED)
+	find_package(SDL2_mixer REQUIRED)
+endif()
+
+include(FetchContent)
+
+FetchContent_Declare(spdlog 
+    GIT_REPOSITORY https://github.com/gabime/spdlog
+    GIT_SHALLOW ON 
+)
+
+set(SPDLOG_BUILD_SHARED ON)
+set(BUILD_SHARED_LIBS ON)
+
+FetchContent_MakeAvailable(spdlog)
+
+#find_package(spdlog)
+
+set(CMAKE_CXX_STANDARD 17)
+add_executable(${PROJECT_NAME} )
+target_include_directories( ${PROJECT_NAME}
+                    PRIVATE
+                    ${SDL2_INCLUDE_DIR} 
                     ${SDL2_IMAGE_INCLUDE_DIR}
                     ${SDL2_MIXER_INCLUDE_DIR})
 
-set(SOURCE_FILES
-src/ANIMATION.cpp
-src/GRAPHICS_Sprites_Draw.cpp
-src/LOOP_Editor_Stages_Creator_Functions.cpp
-src/LOOP_Stagefile_Load.cpp
-src/STAGE_Draw.cpp
-src/AUDIO.cpp
-src/GRAPHICS_Sprites_Move.cpp
-src/LOOP_Editor_Stages_Enemies.cpp
-src/LOOP_Story.cpp
-src/STAGE_Interface_Draw.cpp
-src/CONTENT_Gametype_Load.cpp
-src/GRAPHICS_Tiles_Animations.cpp
-src/LOOP_Editor_Stages_Interface.cpp
-src/PLAYER.cpp
-src/SYSTEM_Debug_Infos.cpp
-src/CONTENT_Stages_Load_Write.cpp
-src/GRAPHICS_Tiles_Define.cpp
-src/LOOP_Editor_Stages_Set_Elements.cpp
-src/PLAYER_Collision_NonSolids.cpp
-src/SYSTEM_Draw_Text.cpp
-src/ENEMIES.cpp
-src/GRAPHICS_Tiles_Draw.cpp
-src/LOOP_Editor_Stages_Sprites.cpp
-src/PLAYER_Collision_Solids.cpp
-src/SYSTEM_Input_General.cpp
-src/ENEMIES_Collision.cpp
-src/GRAPHICS_Tiles_Elements.cpp
-src/LOOP_Editor_Stages_Stage_Settings.cpp
-src/PLAYER_Collision_Solids_Specials.cpp
-src/SYSTEM_SDL_Textures.cpp
-src/ENEMIES_Draw.cpp
-src/GRAPHICS_Tiles_Switch_Tile.cpp
-src/LOOP_Editor_Tiles.cpp
-src/PLAYER_Collision_Sprites.cpp
-src/SYSTEM_SDL_init.cpp
-src/ENEMIES_Move.cpp
-src/INTERFACE_Draw.cpp
-src/LOOP_Gameloop.cpp
-src/PLAYER_Draw.cpp
-src/SYSTEM_SDL_input.cpp
-src/GAME_ENVIRONMENT.cpp
-src/LOOP_Credits.cpp
-src/LOOP_Gameloop_Splashscreens.cpp
-src/PLAYER_Jump.cpp
-src/SYSTEM_Update_Screen.cpp
-src/GRAPHICS_Sprites.cpp
-src/LOOP_Editor_Stages.cpp
-src/LOOP_Menu.cpp
-src/PLAYER_Killed.cpp
-src/SYSTEM_Vector_Operations.cpp
-src/GRAPHICS_Sprites_Bullets.cpp
-src/LOOP_Editor_Stages_Creator.cpp
-src/LOOP_Options.cpp
-src/PLAYER_Run.cpp
-src/main.cpp
-)
 
-add_executable(openggs ${SOURCE_FILES})
-
-target_link_libraries(openggs ${SDL2_LIBRARY}
-                             ${SDL2_IMAGE_LIBRARIES}
-                             ${SDL2_MIXER_LIBRARIES})
-
+add_subdirectory(src)

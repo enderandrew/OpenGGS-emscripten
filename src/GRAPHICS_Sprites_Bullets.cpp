@@ -22,7 +22,7 @@ void SPRITE_Bullet_Activate()
     //FIRE A BULLET
     if(PC.PowerUp > 1)
     {
-      AUDIO_Sound_Play(AUDIO_SHOOT);
+      Audio::playSound(Audio::AudioTypeEnum::AUDIO_SHOOT);
       Sprite_Bullet.PosY = PC.PosY-PC.ColHeightHalf-PC.ColHeightQuart;
       Sprite_Bullet.Active = true;
       Sprite_Bullet.Direction = PC.Direction;
@@ -50,8 +50,8 @@ void SPRITE_Bullet_Move()
 {
   if(PC.TargetEnemy == 0)
   {
-    if(Sprite_Bullet.Direction == PC_RIGHT){Sprite_Bullet.RunVelocity += 1*World.Friction;}
-    if(Sprite_Bullet.Direction == PC_LEFT) {Sprite_Bullet.RunVelocity -= 1*World.Friction;}
+    if(Sprite_Bullet.Direction == PC_RIGHT){Sprite_Bullet.RunVelocity += 1*GameEnvironment::getWorld().Friction;}
+    if(Sprite_Bullet.Direction == PC_LEFT) {Sprite_Bullet.RunVelocity -= 1*GameEnvironment::getWorld().Friction;}
 
     // MAX SPEED
     if(Sprite_Bullet.RunVelocity < -Sprite_Bullet.RunStrength){Sprite_Bullet.RunVelocity = -Sprite_Bullet.RunStrength;} // MAX SPEED

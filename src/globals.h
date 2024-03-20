@@ -11,12 +11,12 @@
 #include <stdlib.h>     // srand
 #include <time.h>
 
-#include "AUDIO.h"
+#include "Audio.hpp"
 #include "CONTENT_Stages.h"
 #include "CONTENT_Player.h"
 #include "CONTENT_Tiles_and_Sprites.h"
 #include "CONTENT_Enemies.h"
-#include "GAME_ENVIRONMENT.h"
+#include "GameEnvironment.hpp" 
 #include "INTERFACE.h"
 #include "LOOPS.h"
 #include "SYSTEM.h"

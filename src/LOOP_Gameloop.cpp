@@ -24,11 +24,11 @@ void LOOP_Gameloop_Standard()
 
   if(CurrentScreenMode == 1){SDL_ShowCursor(0);}
 
-  if(StageC64.BackgroundColour == 0){AUDIO_Music_Play(MUSIC_OUTDOORS);}
-  if(StageC64.BackgroundColour == 1){AUDIO_Music_Play(MUSIC_INDOORS);}
+  if(StageC64.BackgroundColour == 0){Audio::playMusic(Audio::MusicTypeEnum::MUSIC_OUTDOORS);}
+  if(StageC64.BackgroundColour == 1){Audio::playMusic(Audio::MusicTypeEnum::MUSIC_INDOORS);}
 
 
-  while(!QuitProgram && !QuitToMenu)
+  while(!QuitProgram && !QuitToMenu) // Gameloop
   {
     Unified.Jump = false;
 

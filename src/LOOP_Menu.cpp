@@ -1,8 +1,8 @@
 #include "globals.h"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
-Uint32 menu_timecounter;
-bool QuitFromMenu;
-bool QuitToMenu;
 Menu_Def Menu;
 
 // ##############################################
@@ -11,87 +11,6 @@ Menu_Def Menu;
 
 void LOOP_Menu()
 {
-  QuitFromMenu = false;
-  QuitToMenu = true;
-  menu_timecounter=SDL_GetTicks();
-  GV.Mode = MODE_MENU;
-  Menu.MenuEntriesMainMenu = 10;
-  Menu.ActiveMainMenu = 0;
-
-  SYSTEM_SetResolution(GV.Resolution);
-
-  while(!QuitProgram)
-  {
-    getInput();
-    INPUT_General();
-
-
-    Menu.Active = Menu.ActiveMainMenu;
-    Menu.MenuEntries = Menu.MenuEntriesMainMenu;
-
-    if(Key_RIGHT_pressed || Joy_RIGHT_pressed)
-    {
-      Menu.ActiveMainMenu += 1;
-      if(Menu.ActiveMainMenu > Menu.MenuEntriesMainMenu-1){Menu.ActiveMainMenu = Menu.MenuEntriesMainMenu-1;}
-      AUDIO_Sound_Play(AUDIO_CLICK);
-    }
-
-    if(Key_LEFT_pressed || Joy_LEFT_pressed)
-    {
-      Menu.ActiveMainMenu -= 1;
-      if(Menu.ActiveMainMenu < 0){Menu.ActiveMainMenu = 0;}
-      AUDIO_Sound_Play(AUDIO_CLICK);
-    }
-
-    if(Key_DOWN_pressed || Joy_DOWN_pressed)
-    {
-      if(Menu.ActiveMainMenu < Menu.MenuEntriesMainMenu-Menu.Cols){Menu.ActiveMainMenu = Menu.ActiveMainMenu + Menu.Cols;}
-      AUDIO_Sound_Play(AUDIO_CLICK);
-    }
-
-    if(Key_UP_pressed || Joy_UP_pressed)
-    {
-      if(Menu.ActiveMainMenu > Menu.Cols-1){Menu.ActiveMainMenu = Menu.ActiveMainMenu - Menu.Cols;}
-      AUDIO_Sound_Play(AUDIO_CLICK);
-    }
-
-
-    if(Key_ESCAPE_pressed || Joy_ESCAPE_pressed)                     {QuitProgram = true;}
-
-    //if(Key_F1_pressed) {GV.GameType = TYPE_C64;     GAMETYPE_Load();}
-    //if(Key_F2_pressed) {GV.GameType = TYPE_OPENGGS; GAMETYPE_Load();}
-    //if(Key_F3_pressed) {GV.GameType = TYPE_AMIGA;   GAMETYPE_Load();}
-
-
-    if(!Key_LALT)
-    {
-      if((Key_ENTER_pressed || Joy_OK_pressed) && Menu.ActiveMainMenu == 0) {LOOP_Gameloop_Standard();}
-      if((Key_ENTER_pressed || Joy_OK_pressed) && Menu.ActiveMainMenu == 1) {GV.GameType = TYPE_C64; GAMETYPE_Load();}
-      if((Key_ENTER_pressed || Joy_OK_pressed) && Menu.ActiveMainMenu == 2) {GV.GameType = TYPE_AMIGA; GAMETYPE_Load();}
-      //if((Key_ENTER_pressed || Joy_OK_pressed) && Menu.ActiveMainMenu == 3) {GV.GameType = TYPE_OPENGGS; GAMETYPE_Load();}
-      if((Key_ENTER_pressed || Joy_OK_pressed) && Menu.ActiveMainMenu == 4) {LOOP_Editor_Stages();}
-      if((Key_ENTER_pressed || Joy_OK_pressed) && Menu.ActiveMainMenu == 5) {LOOP_Options();}
-      if((Key_ENTER_pressed || Joy_OK_pressed) && Menu.ActiveMainMenu == 6) {LOOP_Story();}
-      if((Key_ENTER_pressed || Joy_OK_pressed) && Menu.ActiveMainMenu == 7) {LOOP_Stagefile_Load();}
-      if((Key_ENTER_pressed || Joy_OK_pressed) && Menu.ActiveMainMenu == 8) {LOOP_Credits();}
-      if((Key_ENTER_pressed || Joy_OK_pressed) && Menu.ActiveMainMenu == 9) {QuitProgram = true;}
-
-
-
-      if(Key_F1_pressed){SYSTEM_SetResolution(RESOLUTION_640x480);}
-      if(Key_F2_pressed){SYSTEM_SetResolution(RESOLUTION_800x600);}
-      if(Key_F3_pressed){SYSTEM_SetResolution(RESOLUTION_1280x720);}
-
-    }
-    if(QuitToMenu)
-    {
-      QuitToMenu = false;
-      AUDIO_Music_Play(MUSIC_MENU);
-    }
-    Update_Screen();  // draw the scene
-  }
-  Options_Save(); // SAVE OPTIONS TO FILE
-
 }
 
 // ##############################################
